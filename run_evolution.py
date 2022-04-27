@@ -30,8 +30,21 @@ pp.add_option('--network', '-n', action='store',
               help='Curtom initial network')
 pp.add_option("--clear","-c", action="store_true", dest="clear",default=False)
 
+#added for selection
+pp.add_option('--novelty_search', '-s', action='store', default=False, help="selection based on novel behaviour. \
+  Input fitness_novelty to use the fitness value as the behaviour metric for finding novelty. \
+  Input ts_autoencoder to use the output node's time serie as the metric for behaviour and cluster using autoencoder latent space representation. \
+  Input ts_dtw to use the output node's time serie for Dynamic Time Warping distance as the metric for behaviour.\
+  up to date possibilities for this tag may be viewed in Population_Types/evolution_gillespie.py Population class object.")
+#---
+
 (options, arg) = pp.parse_args()  # NB arg=[], but required output
 options = options.__dict__
+
+#added for selection
+with open("usr_options.json", "w") as outfile: #saves the options to read at other points in the script
+    json.dump(options, outfile)
+#---
 
 ############
 ### MAIN ###

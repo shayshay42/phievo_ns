@@ -31,6 +31,11 @@ import time, pickle, dbm  # for restart's
 import phievo.Populations_Types.population_stat as pop_stat
 from phievo import test_STOP_file
 import re
+
+import os
+import sys
+sys.path.insert(os.path.join(os.getcwd(),'phievo'))
+from selection import *
 #########################
 ### Global Parameters ###
 #########################
@@ -109,7 +114,7 @@ def restart(directory, generation, verbose = True):
 ### Class Population Definition ###
 ###################################
 
-class Population(object):
+class Population(object, selection_methods):
 
     """
     Define a population as a list of networks called Population.
@@ -132,6 +137,15 @@ class Population(object):
         """ Copy a few parameters from prmt-dictionary that logically belong to the population, then
         setup various files and from initialization file decide how to initialize networks in genus.
         """
+
+        #added for selection
+        self.archive_log = []
+        self.archive = []
+        self.sparsests = []
+        self.fitests = []
+        #---
+
+
         self.best_fitness = sys.maxsize  # tag to determine if fitness increasing each generation
         self.best_fitness_counter = 0   # number of generations that best fitness has not changed.
         self.same_seed = False  # False -> starting from new data, reset to True below if replicating restart file
@@ -325,6 +339,11 @@ class Population(object):
         Return:
             None
         """
+        #added for selection
+        with open("usr_options.json",'r') as infile:
+            option = json.load(infile)
+        #---
+
         first_mutated = int( self.npopulation * (1-prmt['frac_mutate']) )
         net_stat = pop_stat.NetworkStat(stat_dict)
         gen_stat = pop_stat.GenusStat()
@@ -343,6 +362,10 @@ class Population(object):
         start_gen = max(self.generation0,prmt["restart"]["kgeneration"])
         prmt["restart"]["kgeneration"] = 0
 
+        #added for selection
+        archive_threshold = 1.2 
+        #1.2 is good for the current slection methods but can be added as a hyperparameter to initialization or -s tag
+        #---
 
         for t_gen in range(start_gen,prmt['ngeneration']):
             prmt['generation'] = t_gen
@@ -363,7 +386,55 @@ class Population(object):
             else:
                 self.tgeneration=2*self.tgeneration
             fitness_treatment(self)
-            self.pop_sort()
+            
+            #added for selection
+            #hyperparameters are to be updated here as opposed to inizialization c file
+            if 'novelty_search' not in option.keys():
+                print('not using novelty sorting fitness for opt')
+                archive_threshold = self.pop_sort(tgen, archive_threshold)
+           
+            elif option['novelty_search'] == 'fitness_novelty':
+                print('using novelty sorting fitness')
+                archive_threshold = self.fitness_novelty(t_gen,archive_threshold, pareto=False, k=100, logit=True)
+            
+            elif option['novelty_search'] == 'fitness_novelty_pareto':
+                print('using novelty sorting fitness with pareto')
+                archive_threshold = self.fitness_novelty(t_gen,archive_threshold, pareto=True, k=100, logit=False)
+            
+            elif option['novelty_search'] == 'ts_autoencoder':
+                print('using novelty: selecting most novel timeseries using autoencoder')
+                archive_threshold = self.timeseries_embed(t_gen,archive_threshold, pareto=True,k=100,linear=False)
+
+            elif option['novelty_search'] == 'ts_dba':
+                print('using novelty: selecting most novel timeseires with DTW Barycenter averaging')
+                archive_threshold = self.dba_novelty(t_gen,archive_threshold,k=5)
+
+            elif option['novelty_search'] == 'ts_dtw':
+                print('using novelty: selecting most novel timeseires with DTW')
+                archive_threshold = self.dtw_novelty(t_gen,archive_threshold,custom=False,k=100,pareto=True)
+           
+            elif option['novelty_search'] == 'graph_ged':
+                print('using novelty: selecting moset novel graph with GED')
+                archive_threshold = self.ged_novelty(t_gen,archive_threshold)
+           
+            elif option['novelty_search'] == 'random_selection':
+                print('selecting individuals at random with blacklist for nones')
+                self.random_sort()
+
+            elif option['novelty_search'] == 'ts_arima':
+                print('using novelty: selecting most novel timeseries using SARIMAX model')
+                archive_threshold = self.arima_embed(t_gen,archive_threshold, pareto=True, k=100)
+           
+            else:
+                print("You didn't input any of the possible choices will default to fitness selection, if the issue persists contact tech support")
+                archive_threshold = self.pop_sort(t_gen, archive_threshold)
+
+            
+            self.getadd_best()
+            self.save_bests()
+            #---
+
+
             gen_stat.process_sorted_genus(self)
 
             # print info after mutation step so built_integrator*.c consistent with Bests file
