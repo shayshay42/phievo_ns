@@ -255,6 +255,10 @@ class Mutable_Network(classes_eds2.Network):
             generator (Random): the local random generator number
         """
         classes_eds2.Network.__init__(self)
+        #added for selection
+        self.latent_output = [0]
+        self.sparseness = 0
+        #---
         self.fitness = None
         self.dlt_fitness = 0
         self.data_evolution = []
