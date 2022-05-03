@@ -20,6 +20,10 @@
 """
 import optparse
 import phievo
+#added for selection
+import json
+#---
+
 # Definition of the parser options
 pp = optparse.OptionParser()
 pp.add_option('--model', '-m', action='store',

@@ -42,9 +42,9 @@ import statsmodels.api as sm
 
 class selection_methods(object):
 
-	def __init__(self): pass
+    def __init__(self): pass
 
-	def getadd_best(self):
+    def getadd_best(self):
         sparse_list = [net.sparseness if net.fitness != None and len(net.data_evolution) != 0 else -99999 for net in self.genus]
         sparsest_net = self.genus[sparse_list.index(max(sparse_list))]
         self.sparsests.append(sparsest_net)
@@ -100,104 +100,93 @@ class selection_methods(object):
         #print(sorted_ranking)
         self.genus = [self.genus[indx] for indx in sorted_ranking.keys()]
 
-	def pop_sort_archive(self,tgen, archive_threshold, logit=False, k=100):
-		"""
-		Sort the population with respect to fitness
-		while holding an archive with dynamic threshold
-		and saving 
-		"""
-	    self.genus.sort(key=lambda X: X.fitness if X.fitness is not None else 9999)
-	    idx = 0
-	    for net_i in self.genus:
-
-	        ifit = net_i.fitness
-	        if logit and ifit!=None:
-	            ifit = log(1+net_i.fitness)
-	        if ifit == None:
-	            #print('none fitness for network ',idx)
-	            net_i.sparseness = 0
-
-	            continue
-
-	        # if ifit < 1:
-	        #     try:
-	        #         ifit = abs(log(ifit))
-	        #     except ValueError:
-	        #         print("Network number ",idx," solved the problem with fitnesss ",ifit)
-	        #         os.exit(0)
-
-	        dist_pernet = {}
-	        idx2 = 0
-	        for idx_j,net_j in enumerate(self.genus):
-
-	            jfit = net_j.fitness
-	            if log and jfit!=None:
-	                jfit = log(1+net_j.fitness)
-	            if jfit == None:
-	                dist_pernet[idx_j] = 0
-	                #print('none fitness for network ',idx2)
-	                continue
-
-	            # if jfit < 1:
-	            #     jfit = abs(log(jfit))
-
-	            dist_pernet[idx_j] = abs(ifit - jfit)
-	            idx2 += 1
-
-	        if len(dist_pernet) == 0:
-	            print('came up empty divide by zero error averted removed from population')
-	            dist_pernet = [0]
-	        
-	        if len(self.archive) == 0:
-	            print("archive is empty!")
-	        
-	        dist_to_archive = []
-	        for archive_net in self.archive: #don't know where to hold archive to make sure it doesn't get set to init
-	            archive_fit = archive_net.fitness
-	            dist_to_archive.append(abs(ifit - archive_fit))
-	        if len(dist_to_archive) != 0:
-	                dist_pernet_L = list(dist_pernet.values())
-	                dist_pernet_L.extend(dist_to_archive)
-	                sorted_distance = sorted(dist_pernet_L)
-	                sparcity= sum(sorted_distance[:k])/k
-	                #sparcity += sum(dist_to_archive)/len(dist_to_archive)# used to be k-nn with k=n
-	        else:
-	            sorted_distance = dict(sorted(dist_pernet.items(), key=lambda item: item[1]))
-	            sparcity= sum(list(sorted_distance.values())[:k])/k
-
-	        net_i.sparseness = sparcity
-	        #sparse_dict[idx] = sparcity
-	        idx += 1
-	    
-	    if len(self.archive_log) > 4 and sum(self.archive_log[-4:]) < 4: #make these into parameters
-	        archive_threshold *= 0.9 #lowered by 10 percent
-	        print('lowered archive_threshold:', archive_threshold)
-	    elif len(self.archive_log) > 4 and sum(self.archive_log[-4:]) > 10:
-	        archive_threshold *= 1.2
-	        print('raised archive_threshold:', archive_threshold)
-	        print('this is the last 5 in archive: \n', self.archive[-5:])
-
-	    archive_add = 0
-	    for net in self.genus:
-	        # if tgen <= 1: #add all behaviour from first generation to archive
-	        #     self.archive.append(net.fitness)
-	        if net.sparseness >= archive_threshold:
-	            archive_add += 1
-	            self.archive.append(net)
-	    self.archive_log.append(archive_add)
-
-	    if tgen%100 == 0:
-	        base = self.namefolder
-	        os.mkdir(os.path.join(base,'generation'+str(tgen)))
-	        os.mkdir(os.path.join(base,'generation'+str(tgen),'archive'))
-	        os.mkdir(os.path.join(base,'generation'+str(tgen),'population'))
-	        for i,net in enumerate(self.archive):
-	            with open(os.path.join(base,'generation'+str(tgen),'archive','archive_network'+str(i)+'.pkl'),'wb') as df:
-	                pickle.dump(net, df)
-	        for i,net in enumerate(self.genus):
-	            with open(os.path.join(base,'generation'+str(tgen),'population','network'+str(i)+'.pkl'),'wb') as df:
-	                pickle.dump(net, df)
-	    return archive_threshold
+    def pop_sort_archive(self,tgen, archive_threshold, logit=False, k=100):
+        """
+        Sort the population with respect to fitness
+        while holding an archive with dynamic threshold
+        and saving 
+        """
+        self.genus.sort(key=lambda X: X.fitness if X.fitness is not None else 9999)
+        idx = 0
+        for net_i in self.genus:
+            ifit = net_i.fitness
+            if logit and ifit!=None:
+                ifit = log(1+net_i.fitness)
+            if ifit == None:
+                #print('none fitness for network ',idx)
+                net_i.sparseness = 0
+                continue
+            # if ifit < 1:
+            #     try:
+            #         ifit = abs(log(ifit))
+            #     except ValueError:
+            #         print("Network number ",idx," solved the problem with fitnesss ",ifit)
+            #         os.exit(0)
+            dist_pernet = {}
+            idx2 = 0
+            for idx_j,net_j in enumerate(self.genus):
+                jfit = net_j.fitness
+                if log and jfit!=None:
+                    jfit = log(1+net_j.fitness)
+                if jfit == None:
+                    dist_pernet[idx_j] = 0
+                    #print('none fitness for network ',idx2)
+                    continue
+                # if jfit < 1:
+                #     jfit = abs(log(jfit))
+                dist_pernet[idx_j] = abs(ifit - jfit)
+                idx2 += 1
+            if len(dist_pernet) == 0:
+                print('came up empty divide by zero error averted removed from population')
+                dist_pernet = [0]
+            
+            if len(self.archive) == 0:
+                print("archive is empty!")
+            
+            dist_to_archive = []
+            for archive_net in self.archive: #don't know where to hold archive to make sure it doesn't get set to init
+                archive_fit = archive_net.fitness
+                dist_to_archive.append(abs(ifit - archive_fit))
+            if len(dist_to_archive) != 0:
+                    dist_pernet_L = list(dist_pernet.values())
+                    dist_pernet_L.extend(dist_to_archive)
+                    sorted_distance = sorted(dist_pernet_L)
+                    sparcity= sum(sorted_distance[:k])/k
+                    #sparcity += sum(dist_to_archive)/len(dist_to_archive)# used to be k-nn with k=n
+            else:
+                sorted_distance = dict(sorted(dist_pernet.items(), key=lambda item: item[1]))
+                sparcity= sum(list(sorted_distance.values())[:k])/k
+            net_i.sparseness = sparcity
+            #sparse_dict[idx] = sparcity
+            idx += 1
+        
+        if len(self.archive_log) > 4 and sum(self.archive_log[-4:]) < 4: #make these into parameters
+            archive_threshold *= 0.9 #lowered by 10 percent
+            print('lowered archive_threshold:', archive_threshold)
+        elif len(self.archive_log) > 4 and sum(self.archive_log[-4:]) > 10:
+            archive_threshold *= 1.2
+            print('raised archive_threshold:', archive_threshold)
+            print('this is the last 5 in archive: \n', self.archive[-5:])
+        archive_add = 0
+        for net in self.genus:
+            # if tgen <= 1: #add all behaviour from first generation to archive
+            #     self.archive.append(net.fitness)
+            if net.sparseness >= archive_threshold:
+                archive_add += 1
+                self.archive.append(net)
+        self.archive_log.append(archive_add)
+        if tgen%100 == 0:
+            base = self.namefolder
+            os.mkdir(os.path.join(base,'generation'+str(tgen)))
+            os.mkdir(os.path.join(base,'generation'+str(tgen),'archive'))
+            os.mkdir(os.path.join(base,'generation'+str(tgen),'population'))
+            for i,net in enumerate(self.archive):
+                with open(os.path.join(base,'generation'+str(tgen),'archive','archive_network'+str(i)+'.pkl'),'wb') as df:
+                    pickle.dump(net, df)
+            for i,net in enumerate(self.genus):
+                with open(os.path.join(base,'generation'+str(tgen),'population','network'+str(i)+'.pkl'),'wb') as df:
+                    pickle.dump(net, df)
+        return archive_threshold
 
     def random_sort(self):
         not_nones = []

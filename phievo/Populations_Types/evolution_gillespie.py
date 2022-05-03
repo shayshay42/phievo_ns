@@ -34,7 +34,7 @@ import re
 
 import os
 import sys
-sys.path.insert(os.path.join(os.getcwd(),'phievo'))
+sys.path.insert(1,os.path.join(os.getcwd(),'phievo'))
 from selection import *
 #########################
 ### Global Parameters ###
