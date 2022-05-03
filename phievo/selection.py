@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 from phievo import AE
 import random
 import pandas as pd
+import sys
+sys.path.insert(1,os.path.join(os.getcwd(),'misc'))
 import make_plots
 from tqdm import tqdm
 import torch
@@ -26,6 +28,7 @@ from torch import optim
 import torchvision
 import torch.nn as nn
 import math
+from math import log,sqrt
 import json
 
 # from fastdtw import fastdtw

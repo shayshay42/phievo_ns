@@ -1,2 +1,6 @@
 This is a STOP file.
 Deleting this file will stop the running evolution.
+
+ --- Current State ---
+Seed:0
+generation = 17 (fitness: 3.832069619494465)

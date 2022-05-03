@@ -34,8 +34,12 @@ import re
 
 import os
 import sys
+#added for selection
 sys.path.insert(1,os.path.join(os.getcwd(),'phievo'))
+sys.path.insert(1,os.path.join(os.getcwd(),'misc'))
 from selection import *
+#---
+
 #########################
 ### Global Parameters ###
 #########################
@@ -114,7 +118,7 @@ def restart(directory, generation, verbose = True):
 ### Class Population Definition ###
 ###################################
 
-class Population(object, selection_methods):
+class Population(selection_methods): #object removed for selesction
 
     """
     Define a population as a list of networks called Population.

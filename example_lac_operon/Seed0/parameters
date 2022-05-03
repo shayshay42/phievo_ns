@@ -1,0 +1,15 @@
+ccode_dir
+/mnt/c/Users/boop/phievo_ns/phievo/CCodes
+
+cfile dictionary
+{'header': '/mnt/c/Users/boop/phievo_ns/phievo/CCodes/integrator_header.h', 'utilities': '/mnt/c/Users/boop/phievo_ns/phievo/CCodes/utilities.c', 'geometry': '/mnt/c/Users/boop/phievo_ns/phievo/CCodes/linear_geometry.c', 'integrator': '/mnt/c/Users/boop/phievo_ns/phievo/CCodes/euler_integrator.c', 'main': '/mnt/c/Users/boop/phievo_ns/phievo/CCodes/main_general.c', 'fitness': 'example_lac_operon/fitness.c', 'init_history': 'example_lac_operon/init_history.c', 'input': 'example_lac_operon/input.c'}
+
+prmt dictionary
+{'nstep': 5000, 'ncelltot': 1, 'nneighbor': 3, 'ntries': 2, 'dt': 0.05, 'npopulation': 100, 'ngeneration': 1001, 'tgeneration': 1.0, 'noutput': 1, 'ninput': 1, 'freq_plot': 10, 'freq_stat': 5, 'frac_mutate': 0.5, 'redo': 1, 'nseed': 25, 'firstseed': 0, 'multipro_level': 1, 'plot': 0, 'langevin_noise': 0, 'pareto': 0, 'npareto_functions': 1, 'rshare': 0.0, 'restart': {'activated': False, 'dir': 'Exponential/Seed0', 'kgeneration': 50, 'freq': 50, 'same_seed': True}, 'stop_file': '/mnt/c/Users/boop/phievo_ns/example_lac_operon/STOP.txt'}
+
+ranges dictionary
+{'Species.degradation': 1.0, 'Species.diffusion': 1.0, 'TModule.rate': 1.0, 'TModule.basal': 0.0, 'CorePromoter.delay': 0, 'TFHill.hill': 5.0, 'TFHill.threshold': 1.0, 'PPI.association': 1.0, 'PPI.disassociation': 1.0, 'Phosphorylation.rate': 1.0, 'Phosphorylation.hill': 5.0, 'Phosphorylation.threshold': 1.0, 'Phosphorylation.dephosphorylation': 1.0, 'Degradation.rate': 1.0}
+
+mutation dictionary
+{'random_gene()': 0.01, "random_gene('TF')": 0.01, "random_gene('Kinase')": 0.0, "random_gene('Ligand')": 0.0, "random_gene('Receptor')": 0.0, "random_Interaction('TFHill')": 0.005, "random_Interaction('PPI')": 0.005, "random_Interaction('Phosphorylation')": 0.0, "random_Interaction('Degradation')": 0.0, "remove_Interaction('TFHill')": 0.015, "remove_Interaction('PPI')": 0.015, "remove_Interaction('CorePromoter')": 0.015, "remove_Interaction('Phosphorylation')": 0.0, "remove_Interaction('Degradation')": 0.0, "mutate_Node('Species')": 0.1, "mutate_Node('TFHill')": 0.1, "mutate_Node('CorePromoter')": 0.1, "mutate_Node('TModule')": 0.1, "mutate_Node('PPI')": 0.1, "mutate_Node('Phosphorylation')": 0.1, "mutate_Node('Degradation')": 0.1, 'random_add_output()': 0.0, 'random_remove_output()': 0.0, 'random_change_output()': 0.0}
+
